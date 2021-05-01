@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.cms.dao.CmsFriendlinkDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.cms.entity.CmsFriendlink">
+        <!--@Table cms_friendlink-->
+        <result property="friendlinkId" column="friendlink_id" jdbcType="INTEGER"/>
+        <result property="friendlinkName" column="friendlink_name" jdbcType="VARCHAR"/>
+        <result property="friendlinkUrl" column="friendlink_url" jdbcType="VARCHAR"/>
+        <result property="friendlinkDes" column="friendlink_des" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          friendlink_id, friendlink_name, friendlink_url, friendlink_des, status, create_by, update_by, create_time, update_time
+        from cms_friendlink
+        where friendlink_id = #{friendlinkId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          friendlink_id, friendlink_name, friendlink_url, friendlink_des, status, create_by, update_by, create_time, update_time
+        from cms_friendlink
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        friendlink_id, friendlink_name, friendlink_url, friendlink_des, status, create_by, update_by, create_time,
+        update_time
+        from cms_friendlink
+        <where>
+            <if test="friendlinkId != null">
+                and friendlink_id = #{friendlinkId}
+            </if>
+            <if test="friendlinkName != null and friendlinkName != ''">
+                and friendlink_name = #{friendlinkName}
+            </if>
+            <if test="friendlinkUrl != null and friendlinkUrl != ''">
+                and friendlink_url = #{friendlinkUrl}
+            </if>
+            <if test="friendlinkDes != null and friendlinkDes != ''">
+                and friendlink_des = #{friendlinkDes}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+    <!--分页查询友情链接-->
+    <select id="queryAllByPageUtil" resultMap="BaseResultMap">
+        select
+        friendlink_id, friendlink_name, friendlink_url, friendlink_des, status, create_by, update_by, create_time,
+        update_time
+        from cms_friendlink
+        <if test="field!=null">
+            where
+            <foreach collection="field.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+        <if test="orderByClaus != null">
+            order by ${orderByClaus}
+        </if>
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <!--获取符合条件的总数-->
+    <select id="queryTotalByField" resultType="java.lang.Long">
+        select count(*)
+        from cms_friendlink
+        <if test="fieldParams != null ">
+            where
+            <foreach collection="fieldParams.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="friendlinkId" useGeneratedKeys="true">
+        insert into cms_friendlink(friendlink_name, friendlink_url, friendlink_des, status, create_by, update_by, create_time, update_time)
+        values (#{friendlinkName}, #{friendlinkUrl}, #{friendlinkDes}, #{status}, #{createBy}, #{updateBy}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cms_friendlink
+        <set>
+            <if test="friendlinkName != null and friendlinkName != ''">
+                friendlink_name = #{friendlinkName},
+            </if>
+            <if test="friendlinkUrl != null and friendlinkUrl != ''">
+                friendlink_url = #{friendlinkUrl},
+            </if>
+            <if test="friendlinkDes != null and friendlinkDes != ''">
+                friendlink_des = #{friendlinkDes},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where friendlink_id = #{friendlinkId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cms_friendlink where friendlink_id = #{friendlinkId}
+    </delete>
+
+</mapper>

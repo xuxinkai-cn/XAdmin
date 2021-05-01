@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.cms.dao.CmsCommentDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.cms.entity.CmsComment">
+        <!--@Table cms_comment-->
+        <result property="commentId" column="comment_id" jdbcType="INTEGER"/>
+        <result property="commentPid" column="comment_pid" jdbcType="INTEGER"/>
+        <result property="articleId" column="article_id" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="commentContent" column="comment_content" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          comment_id, comment_pid, article_id, nickname, email, url, comment_content, status, create_time
+        from cms_comment
+        where comment_id = #{commentId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          comment_id, comment_pid, article_id, nickname, email, url, comment_content, status, create_time
+        from cms_comment
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        comment_id, comment_pid, article_id, nickname, email, url, comment_content, status, create_time
+        from cms_comment
+        <where>
+            <if test="commentId != null">
+                and comment_id = #{commentId}
+            </if>
+            <if test="commentPid != null">
+                and comment_pid = #{commentPid}
+            </if>
+            <if test="articleId != null">
+                and article_id = #{articleId}
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname = #{nickname}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="url != null and url != ''">
+                and url = #{url}
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                and comment_content = #{commentContent}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--统计指定文章下的评论数量-->
+    <select id="countByArticleId" resultType="java.lang.Integer">
+        select count(*) from cms_comment where article_id = #{articleId}
+    </select>
+
+    <!--分页查询评论-->
+    <select id="queryAllByPageUtil" resultType="cn.xuxinkai.cms.dto.CommentDto">
+        select DISTINCT
+        c.comment_id, c.comment_pid, c.article_id,c.nickname, c.email, c.url, c.comment_content, c.status,
+        c.create_time, a.title
+        from cms_comment c
+        LEFT JOIN cms_article a
+        on c.article_id = a.article_id
+        <if test="pageUtil.field!=null or status != null">
+            where
+            <if test="pageUtil.field!=null">
+                <foreach collection="pageUtil.field.entrySet()" item="item" index="key" separator="and">
+                    c.${key} = #{item}
+                </foreach>
+            </if>
+            <if test="status != null and status != ''">
+                <if test="pageUtil.field != null">
+                    and
+                </if>
+                c.status in (${status})
+            </if>
+        </if>
+        <if test="pageUtil.orderByClaus != null">
+            order by ${pageUtil.orderByClaus}
+        </if>
+        <if test="pageUtil.start!=null and pageUtil.pageSize!=null">
+            limit #{pageUtil.start},#{pageUtil.pageSize}
+        </if>
+    </select>
+
+    <!--获取符合条件的评论总数-->
+    <select id="queryTotalByField" resultType="java.lang.Long">
+        select count(*)
+        from cms_comment
+        <if test="field!=null or status != null">
+            where
+            <if test="field!=null">
+                <foreach collection="field.entrySet()" item="item" index="key" separator="and">
+                    ${key} = #{item}
+                </foreach>
+            </if>
+            <if test="status != null and status != ''">
+                <if test="field != null">
+                    and
+                </if>
+                status in (${status})
+            </if>
+        </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="commentId" useGeneratedKeys="true">
+        insert into cms_comment(comment_pid, article_id, nickname, email, url, comment_content, status, create_time)
+        values (#{commentPid}, #{articleId}, #{nickname}, #{email}, #{url}, #{commentContent}, #{status}, #{createTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cms_comment
+        <set>
+            <if test="commentPid != null">
+                comment_pid = #{commentPid},
+            </if>
+            <if test="articleId != null">
+                article_id = #{articleId},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="url != null and url != ''">
+                url = #{url},
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                comment_content = #{commentContent},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where comment_id = #{commentId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cms_comment where comment_id = #{commentId}
+    </delete>
+
+    <!--通过文章id删除评论-->
+    <delete id="deleteByArticleId">
+        delete from cms_comment where article_id = #{articleId}
+    </delete>
+
+</mapper>

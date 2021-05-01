@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.modules.common.dao.SysLogDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.modules.common.entity.SysLog">
+        <!--@Table sys_log-->
+        <result property="logId" column="log_id" jdbcType="INTEGER"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="logType" column="log_type" jdbcType="VARCHAR"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="params" column="params" jdbcType="VARCHAR"/>
+        <result property="requestIp" column="request_ip" jdbcType="VARCHAR"/>
+        <result property="time" column="time" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="browser" column="browser" jdbcType="VARCHAR"/>
+        <result property="exceptionDetail" column="exception_detail" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          log_id, description, log_type, method, params, request_ip, time, username, address, browser, exception_detail, create_time
+        from sys_log
+        where log_id = #{logId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          log_id, description, log_type, method, params, request_ip, time, username, address, browser, exception_detail, create_time
+        from sys_log
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        log_id, description, log_type, method, params, request_ip, time, username, address, browser, exception_detail,
+        create_time
+        from sys_log
+        <where>
+            <if test="logId != null">
+                and log_id = #{logId}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="logType != null and logType != ''">
+                and log_type = #{logType}
+            </if>
+            <if test="method != null and method != ''">
+                and method = #{method}
+            </if>
+            <if test="params != null and params != ''">
+                and params = #{params}
+            </if>
+            <if test="requestIp != null and requestIp != ''">
+                and request_ip = #{requestIp}
+            </if>
+            <if test="time != null">
+                and time = #{time}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="browser != null and browser != ''">
+                and browser = #{browser}
+            </if>
+            <if test="exceptionDetail != null and exceptionDetail != ''">
+                and exception_detail = #{exceptionDetail}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--分页查询操作日志-->
+    <select id="queryAllByPageUtil" resultMap="BaseResultMap">
+        select
+        log_id, description, log_type, method, params, request_ip, time, username, address, browser,
+        exception_detail,create_time
+        from sys_log
+        <if test="pageUtil.field!=null">
+            where
+            <foreach collection=" pageUtil.field.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+        <if test="pageUtil.orderByClaus != null">
+            order by ${pageUtil.orderByClaus}
+        </if>
+        <if test="pageUtil.start!=null and pageUtil.pageSize!=null">
+            limit #{pageUtil.start},#{pageUtil.pageSize}
+        </if>
+    </select>
+
+    <!--根据field获取总数-->
+    <select id="queryTotalByField" resultType="java.lang.Long">
+        select count(*)
+        from sys_log
+        <if test="fieldParams !=null ">
+            where
+            <foreach collection="fieldParams.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="logId" useGeneratedKeys="true">
+        insert into sys_log(description, log_type, method, params, request_ip, time, username, address, browser, exception_detail, create_time)
+        values (#{description}, #{logType}, #{method}, #{params}, #{requestIp}, #{time}, #{username}, #{address}, #{browser}, #{exceptionDetail}, #{createTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update sys_log
+        <set>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="logType != null and logType != ''">
+                log_type = #{logType},
+            </if>
+            <if test="method != null and method != ''">
+                method = #{method},
+            </if>
+            <if test="params != null and params != ''">
+                params = #{params},
+            </if>
+            <if test="requestIp != null and requestIp != ''">
+                request_ip = #{requestIp},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="browser != null and browser != ''">
+                browser = #{browser},
+            </if>
+            <if test="exceptionDetail != null and exceptionDetail != ''">
+                exception_detail = #{exceptionDetail},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where log_id = #{logId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from sys_log where log_id = #{logId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="layui-header header" th:fragment="header-fragment">
+    <div class="layui-main">
+        <a class="logo" href="/">
+            进击的凯哥 </a>
+
+        <ul class="layui-nav">
+            <li class="layui-nav-item layui-hide-xs layui-this">
+                <a href="/">首页</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs ">
+                <a href="/archive.html" title="归档">归档</a>
+            </li>
+            <!--<li class="layui-nav-item layui-hide-xs ">-->
+            <!--    <a href="news.html" title="头条">头条</a>-->
+            <!--</li>-->
+            <!--<li class="layui-nav-item layui-hide-xs ">-->
+            <!--    <a href="mylife.html" title="动态">动态</a>-->
+            <!--</li>-->
+            <li class="layui-nav-item layui-hide-xs ">
+                <a href="/article/3.html" title="留言">留言</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs ">
+                <a href="/article/2.html" title="友链">友链</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs ">
+                <a href="/article/1.html" title="关于">关于</a>
+            </li>
+
+            <li class="layui-nav-item nav-btn layui-hide-sm">
+                <a href="javascript:;"><i class='layui-icon layui-icon-more'></i></a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/archive.html">归档</a></dd>
+                    <!--<dd><a href="news.html">头条</a></dd>-->
+                    <!--<dd><a href="mylife.html">动态</a></dd>-->
+                    <dd><a href="/article/3.html">留言</a></dd>
+                    <dd><a href="/article/2.html">友链</a></dd>
+                    <dd><a href="/article/1.html">关于</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>归档 - 进击的小凯 ~ 个人博客</title>
+
+    <!-- 通过自有函数输出HTML头部信息 -->
+    <meta name="description" content="归档">
+    <meta name="template" content="echo">
+
+    <link rel="stylesheet" href="/cms/echo/layui/css/layui.css">
+    <link rel="stylesheet" href="/cms/echo/css/style.css">
+    <script src="/cms/echo/layui/layui.js"></script>
+    <script src="/cms/echo/js/main-2.0.js"></script>
+
+    <style>
+        .header {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10000;
+            width: 100%;
+        }
+
+        .layui-container {
+            margin-top: 70px;
+        }
+
+        .timeline-menu-fixed {
+            top: 70px;
+        }
+
+        .timeline-header h2 {
+            margin-top: -70px;
+            padding-top: 70px;
+        }
+
+        .header {
+            background-color: #000000;
+        }
+
+        .header a {
+            color: #ffffff;
+        }
+
+        .header .layui-nav .layui-nav-item a {
+            color: #ffffff;
+        }
+
+        .header .layui-nav .layui-nav-item .layui-nav-child a {
+            color: #212220;
+        }
+
+        .header .layui-nav .layui-nav-more {
+            border-color: #ffffff transparent transparent;
+        }
+
+        .header .layui-nav .layui-nav-mored {
+            border-color: transparent transparent #ffffff;
+        }
+
+        .footer {
+            background: #000000;
+        }
+
+        .footer span {
+            color: #ffffff;
+        }
+
+        .footer .layui-breadcrumb a {
+            color: #ffffff !important;
+        }
+
+        .footer .layui-breadcrumb span[lay-separator] {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+<!--[if lt IE 8]>
+<div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a
+        href="http://browsehappy.com/">升级你的浏览器</a>.
+</div>
+<![endif]-->
+
+<!--导航-->
+<div th:replace="cms/echo/common/header::header-fragment"></div>
+
+<div class="layui-container">
+    <div class="layui-row layui-col-space15 main">
+
+        <div class="map">
+            <span class="layui-breadcrumb">
+                <a href="/">首页</a>
+                <a><cite>归档</cite></a>
+            </span>
+        </div>
+
+        <!--归档列表-->
+        <div class="layui-col-md9 layui-col-lg9">
+            <div class="archives">
+                <div class="title-page">
+                    <h3><i class="layui-icon">&#xe653;</i> 文章归档</h3>
+                    <p>目前共计 <em>[[${articleNum}]]</em> 篇日志，共 <em>[[${commentNum}]]</em> 条评论，加油啊~</p>
+                </div>
+                <!--归档文章列表-->
+                <ul class="layui-timeline" id="timeline">
+                    <th:block th:if="${archive != null}">
+                        <th:block th:each="item,start : ${archive}">
+                            <li class="timeline-header">
+                            <span class="layui-btn layui-btn-radius layui-btn-primary">
+                                <a href="#"><h2 th:id="'timeline-header-'+${start.index+1}">[[${item.year}]] 年 [[${item.month}]] 月</h2></a>
+                            </span>
+                            </li>
+                            <th:block th:each="it,st : ${item.cmsArticleList}">
+                                <li class="timeline-item">
+                                    <div class="timeline-wrap">
+                                        <span class="timeline-date">[[${#dates.format(it.createTime,'dd')}]] 日</span>
+                                        <span class="timeline-content">
+                                            <a th:href="'/article/'+${it.articleId}+'.html'" class="timeline-text">[[${it.title}]]</a>
+                                        </span>
+                                    </div>
+                                </li>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                    <li class="timeline-header">
+                        <div class="layui-btn layui-btn-radius layui-btn-primary"><a href="#" class="timeline-text">破壳日</a></div>
+                    </li>
+                </ul>
+            </div>
+    </div>
+
+        <!--侧边栏-->
+        <div class="sidebar layui-col-md3 layui-col-lg3">
+            <div class="timeline-menu">
+                <h3 class="title-sidebar"><i class="layui-icon">&#xe60c;</i>目录</h3>
+                <ul class="timeline-menu-list">
+                    <th:block th:if="${archive != null}">
+                        <li th:id="'anchor-timeline-header-'+${iterStat.index+1}" class="timeline-menu-item" th:each="item,iterStat : ${archive}">
+                            <a class="timeline-menu-anchor" th:href="'#timeline-header-'+${iterStat.index+1}">[[${item.year}]] 年 [[${item.month}]] 月</a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--页脚-->
+<div th:replace="cms/echo/common/footer::footer-fragment"></div>
+
+<script src="/cms/echo/js/jquery.js"></script>
+<script type="text/javascript">
+    layui.use('jquery', function () {
+        var $ = layui.$;
+        $(function () {
+            $(".timeline-menu").width($('.timeline-menu').width());
+            $(window).scroll(function () {
+                scrollShow();
+            })
+
+            function scrollShow() {
+                for (var i = 6; i > 0; i--) {
+                    var id = 'timeline-header-' + i;
+                    var anchor = '#anchor-timeline-header-' + i;
+                    var header = document.getElementById(id);
+                    var top = header.offsetTop;
+                    if (window.scrollY > top - 1) {
+                        $(anchor).addClass('active').siblings().removeClass('active');
+                        break;
+                    }
+                }
+                var timeline = document.getElementById('timeline').offsetTop;
+                if (window.scrollY > timeline - 1) {
+                    $('.timeline-menu').addClass('timeline-menu-fixed');
+                } else {
+                    $('.timeline-menu').removeClass('timeline-menu-fixed');
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

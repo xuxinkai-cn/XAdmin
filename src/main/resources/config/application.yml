@@ -1,0 +1,57 @@
+# 设置要激活配置文件
+#java -jar xxx.jar --spring.profiles.active=prod
+spring:
+  profiles:
+    active: dev
+  application:
+    name: xadmin
+  banner:
+    charset: utf-8
+    location: classpath:banner.txt
+
+logback:
+  appName: XAdmin
+  fileType: log
+
+#mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  # 实体扫描，多个package用逗号或者分号分隔
+  type-aliases-package: cn.xuxinkai.modules.common.entity
+  # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 登录相关配置
+login:
+  # 登录缓存
+  cache-enable: true
+  #  是否限制单用户登录
+  single-login: false
+  #  验证码
+  login-code:
+    #  验证码类型配置 查看 SysLoginProperties 类
+    code-type: arithmetic
+    #  登录图形验证码有效时间/分钟
+    expiration: 2
+    #  验证码高度
+    width: 111
+    #  验证码宽度
+    heigth: 36
+    # 内容长度
+    length: 2
+    # 字体名称，为空则使用默认字体
+    font-name:
+    # 字体大小
+    font-size: 25
+
+#jwt
+jwt:
+  #非必要不要修改，此处改了前端对应的地方需要修改
+  request-header: Authorization
+  # 必须使用最少88位的Base64对该令牌进行编码
+  token-secret: eGFkbWluIHRva2Vu5Yqg5a+G77yM5qyi6L+O5L2/55SoeGFkbWlu77yM6L+Z5piv5LiA5Liq6Z2e5bi45aW955So55qE5ZCO5Y+w566h55CG57O757uf44CCCiA=
+  # 令牌过期时间 此处单位:毫秒 ，默认3小时:3*60*60*1000
+  token-ttl: 10800000
+  private-key: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALOPFR45ZWD5xVPUcPLUarKwbwnZH4mpkYrV41By6jrs/+BUUgl0mGbKu/rytg0ny7htSOe/gHG+UTJmeZnGJEA1VsRH4SxdyTs1hK9kozMImeQHynNxzUi3JdusTwPKyim9SvXbhkPF6g9xYds9XzUCGuOUN2L7haS3uGSMfKxvAgMBAAECgYBBR1l0HYW/1c5phahyf8syn3Ye7HLMx3sEMHJtwvlo5tS3p7ATg/IMHNRujWKmMbuclw6UQkjeEUTPv/WhdCmlGlpdPbamXsfEpoyiqoqOBV2NBzxiud3UmjPstBCcNzX1Tc4AMHfJr/n+6OM0Sd892NXSY47v9Ow7hTUjXtYu8QJBANdUgH6mKjYdxbd+8lpWEuRdahku/+BQuc4ZBZIw2QW1b4lnygZlNyTTP+dUtwxXK9W9+dLK1DP+IEMDi8IqUS0CQQDVeP8goMIwHQ590LCxXbsJOp++ldfa+TCuHwykPGC1oN+5qiker8dJTzXL6g74Xp5ZmeLXvKymmyHZKTnK4p2LAkBEF2CarAjlG/0NzYLtthI7TJ7kX8xiLqTS2267j97Qw1MF7GAiLZeGeZbXnB5WNKqT6IM7eRApcM7a4iArwh3xAkACCSpdtErFzLEjsAbPWjZ7awy085bgZrn5HyCuvEir0sHvclj8Cu8amt/Hdw73fWeDMT2BkzIOULJs8MC1V53rAkEAt8CrxHXAyTvYTTcIQYpMuH39EX1kplyF80V5kzJXSvUa6iFmncXvJ9Fw+6BJp4tzR+LilI0g5RCG+EpPILqTRg==
+

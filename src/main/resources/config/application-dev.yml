@@ -1,0 +1,119 @@
+server:
+  port: 8000
+  address: 127.0.0.1
+
+logback:
+  logDir: log/dev
+
+logging:
+  level:
+    com.fengwenyi.mybatis_plus_example.service.impl: trace
+    com.fengwenyi.mybatis_plus_example.controller: trace
+
+
+#配置数据源
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/xadmin_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+      username: xadmin_dev
+      password: 123456
+      # 配置初始化大小（默认0）、最小、最大（默认8）
+      initial-size: 1
+      min-idle: 1
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大。 默认为false
+      pool-prepared-statements: true
+      # 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。
+      max-open-prepared-statements: 20
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 用来检测连接是否有效的sql，要求是一个查询语句，常用select 'x'。
+      # 如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会起作用。
+      validation-query: SELECT 1
+      # 申请连接时执行validationQuery检测连接是否有效 默认为true
+      test-on-borrow: true
+      # 归还连接时执行validationQuery检测连接是否有效 默认为false
+      test-on-return: false
+      # 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      # 配置监控统计
+      webStatFilter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: false
+        login-username: admin
+        login-password: 123456
+      filter:
+        stat:
+          enabled: true
+          # 记录慢SQL
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+
+  redis:
+    #数据库索引
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    #连接超时时间
+    timeout: 5000
+
+  # elasticsearch配置
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      rest:
+        uris: http://127.0.0.1:9200
+      client:
+        reactive:
+          connection-timeout: 3000
+          socket-timeout: 3000
+
+  #配置模板引擎
+  thymeleaf:
+    # 开启模板缓存（默认值：true）
+    cache: false
+    # Content-Type的值（默认值：text/html）
+    servlet:
+      content-type: text/html
+    # 模板编码
+    encoding: UTF-8
+    # 视图名称前缀（默认值：classpath:/templates/）
+    prefix: classpath:/templates/
+    # 视图名称后缀（默认值：.html）
+    suffix: .html
+
+# IP 本地解析
+ip:
+  local-parsing: true
+
+# 文件存储路径
+file:
+  mac:
+    path: ~/file/
+    avatar: ~/avatar/
+  linux:
+    path: /home/eladmin/file/
+    avatar: /home/eladmin/avatar/
+  windows:
+    path: C:\Users\xuxinkai\Desktop\minio\localstorage\file\
+    avatar: C:\Users\xuxinkai\Desktop\minio\localstorage\avatar\
+  # 文件大小 /M
+  maxSize: 100
+  avatarMaxSize: 5
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+

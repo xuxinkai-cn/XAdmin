@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="tags" th:fragment="tagcloud-fragment(pageMap)">
+    <h3 class="title-sidebar"><i class="layui-icon">&#xe66e;</i>标签云</h3>
+    <div>
+        <th:block th:each="item,iterStat : ${pageMap.TagCloud}">
+            <a class="layui-btn layui-btn-xs layui-btn-primary" th:href="'/tag/'+${item.tagSlug}+'.html'"
+               th:style="'color: rgb(185,'+${item.articleNum}+',129)'"
+               th:title="${item.tagName}">[[${item.tagName}]]</a>
+        </th:block>
+    </div>
+</div>
+</html>

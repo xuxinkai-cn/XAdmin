@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.cms.dao.CmsTagDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.cms.entity.CmsTag">
+        <!--@Table cms_tag-->
+        <result property="tagId" column="tag_id" jdbcType="INTEGER"/>
+        <result property="tagName" column="tag_name" jdbcType="VARCHAR"/>
+        <result property="tagSlug" column="tag_slug" jdbcType="VARCHAR"/>
+        <result property="tagDes" column="tag_des" jdbcType="VARCHAR"/>
+        <result property="articleNum" column="article_num" jdbcType="INTEGER"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          tag_id, tag_name, tag_slug, tag_des, article_num, create_by, update_by, create_time, update_time
+        from cms_tag
+        where tag_id = #{tagId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          tag_id, tag_name, tag_slug, tag_des, article_num, create_by, update_by, create_time, update_time
+        from cms_tag
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          tag_id, tag_name, tag_slug, tag_des, article_num, create_by, update_by, create_time, update_time
+        from cms_tag
+        <where>
+            <if test="tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="tagName != null and tagName != ''">
+                and tag_name = #{tagName}
+            </if>
+            <if test="tagSlug != null and tagSlug != ''">
+                and tag_slug = #{tagSlug}
+            </if>
+            <if test="tagDes != null and tagDes != ''">
+                and tag_des = #{tagDes}
+            </if>
+            <if test="articleNum != null">
+                and article_num = #{articleNum}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <!--分页查询标签-->
+    <select id="queryAllByPageUtil" resultMap="BaseResultMap">
+        select
+        tag_id, tag_name, tag_slug, tag_des, article_num, create_by, update_by, create_time, update_time
+        from cms_tag
+        <if test="field!=null">
+            where
+            <foreach collection="field.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+        <if test="orderByClaus != null">
+            order by ${orderByClaus}
+        </if>
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryTotalByField" resultType="java.lang.Long">
+        select count(*)
+        from cms_tag
+        <if test="fieldParams != null ">
+            where
+            <foreach collection="fieldParams.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--获取文章数大于0的标签列表-->
+    <select id="queryTagCloud" resultMap="BaseResultMap">
+        select DISTINCT  tag_id, tag_name, tag_slug, tag_des, article_num, create_by, update_by, create_time, update_time from cms_tag where article_num > 0
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="tagId" useGeneratedKeys="true">
+        insert into cms_tag(tag_name, tag_slug, tag_des, article_num, create_by, update_by, create_time, update_time)
+        values (#{tagName}, #{tagSlug}, #{tagDes}, #{articleNum}, #{createBy}, #{updateBy}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cms_tag
+        <set>
+            <if test="tagName != null and tagName != ''">
+                tag_name = #{tagName},
+            </if>
+            <if test="tagSlug != null and tagSlug != ''">
+                tag_slug = #{tagSlug},
+            </if>
+            <if test="tagDes != null and tagDes != ''">
+                tag_des = #{tagDes},
+            </if>
+            <if test="articleNum != null">
+                article_num = #{articleNum},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where tag_id = #{tagId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cms_tag where tag_id = #{tagId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>[[${pageTitle}]] ~ 个人博客</title>
+
+    <!-- 通过自有函数输出HTML头部信息 -->
+    <meta name="description" content="进击的凯哥~个人博客，主要用于记录分享本人所学所得和生活中的所思所感。......">
+    <meta name="keywords" content="进击的凯哥,个人博客、">
+
+    <link rel="stylesheet" href="/cms/echo/layui/css/layui.css">
+    <link rel="stylesheet" href="/cms/echo/css/style.css">
+    <script src="/cms/echo/layui/layui.js"></script>
+    <script src="/cms/echo/js/main-2.0.js"></script>
+    <style type="text/css">
+        .header {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10000;
+            width: 100%;
+        }
+
+        .layui-container {
+            margin-top: 70px;
+        }
+
+        .timeline-menu-fixed {
+            top: 70px;
+        }
+
+        .timeline-header h2 {
+            margin-top: -70px;
+            padding-top: 70px;
+        }
+
+        .header {
+            background-color: #000000;
+        }
+
+        .header a {
+            color: #ffffff;
+        }
+
+        .header .layui-nav .layui-nav-item a {
+            color: #ffffff;
+        }
+
+        .header .layui-nav .layui-nav-item .layui-nav-child a {
+            color: #212220;
+        }
+
+        .header .layui-nav .layui-nav-more {
+            border-color: #ffffff transparent transparent;
+        }
+
+        .header .layui-nav .layui-nav-mored {
+            border-color: transparent transparent #ffffff;
+        }
+
+        .footer {
+            background: #000000;
+        }
+
+        .footer span {
+            color: #ffffff;
+        }
+
+        .footer .layui-breadcrumb a {
+            color: #ffffff !important;
+        }
+
+        .footer .layui-breadcrumb span[lay-separator] {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+<!--[if lt IE 8]>
+<div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a
+        href="http://browsehappy.com/">升级你的浏览器</a>.
+</div>
+<![endif]-->
+<!--导航-->
+<div th:replace="cms/echo/common/header::header-fragment"></div>
+
+<div class="layui-container">
+
+    <!--&lt;!&ndash; 搜索 &ndash;&gt;-->
+    <!--<div class="component layui-show-xs-block layui-hide-sm" style="margin: 0px 7.5px;">-->
+    <!--    <form class="layui-form" id="search" method="post" action="{$this->options->siteUrl}" role="search">-->
+    <!--        <div class="layui-inline input">-->
+    <!--            <input type="text" id="s" name="s" class="layui-input" required="" lay-verify="required"-->
+    <!--                   placeholder="输入关键字搜索">-->
+    <!--        </div>-->
+    <!--        <div class="layui-inline">-->
+    <!--            <button class="layui-btn layui-btn-sm layui-btn-primary"><i class="layui-icon">&#xe615;</i></button>-->
+    <!--        </div>-->
+    <!--    </form>-->
+    <!--</div>-->
+
+
+    <div class="layui-row layui-col-space15 main">
+
+        <th:block th:if="${pageTitle != '首页'}">
+            <div class="map">
+                <span class="layui-breadcrumb" style="visibility: visible;" >
+                    <a href="/">首页</a>
+                    <span lay-separator="">/</span>
+                    <a><cite>[[${pageTitle}]]</cite></a>
+                </span>
+            </div>
+        </th:block>
+
+        <!-- 文章列表 -->
+        <div class="layui-col-md9 layui-col-lg9">
+            <th:block th:if="${null != cmsArticlePageResult}">
+                <th:block th:each="article,iterStat : ${cmsArticlePageResult.rows}">
+                    <div class="title-article list-card">
+                        <div class="list-pic" th:if="${article.coverUrl}">
+                            <a th:href="'/article/'+${article.articleId}+'.html'" th:title="${article.title}">
+                                <img th:src="${article.coverUrl}" th:alt="${article.title}" class="img-full">
+                            </a>
+                        </div>
+                        <a th:href="'/article/'+${article.articleId}+'.html'">
+                            <h1>[[${article.title}]]</h1>
+                            <p>[[${article.summary}]]</p>
+                        </a>
+                        <div class="title-msg">
+                            <span><i class="layui-icon">&#xe705;</i> <a
+                                    th:href="'/category/'+${article.categorySlug}+'.html'">[[${article.categoryName}]]</a></span>
+                            <span><i class="layui-icon">&#xe60e;</i> [[${#dates.format(article.createTime,'yyyy-MM-dd')}]] </span>
+                            <span class="layui-hide-xs"><i
+                                    class="layui-icon">&#xe62c;</i> [[${article.viewNum}]]℃</span>
+                            <span class="layui-hide-xs"><i
+                                    class="layui-icon">&#xe63a;</i> [[${article.commentNum}]]条</span>
+                        </div>
+                    </div>
+                </th:block>
+            </th:block>
+            <!--分页-->
+            <div class="page-navigator" id="laypage">
+            </div>
+        </div>
+
+        <!-- 右侧侧边栏 -->
+        <div class="sidebar layui-col-md3 layui-col-lg3">
+            <!-- 搜索 -->
+            <!--<div class="component layui-hide-xs">-->
+            <!--    <form class="layui-form" id="search" method="post" action="https://www.echo.so/" role="search">-->
+            <!--        <div class="layui-inline input">-->
+            <!--            <input type="text" id="s" name="s" class="layui-input" required="" lay-verify="required"-->
+            <!--                   placeholder="输入关键字搜索">-->
+            <!--        </div>-->
+            <!--        <div class="layui-inline">-->
+            <!--            <button class="layui-btn layui-btn-sm layui-btn-primary"><i class="layui-icon">&#xe615;</i>-->
+            <!--            </button>-->
+            <!--        </div>-->
+            <!--    </form>-->
+            <!--</div>-->
+
+            <!-- 栏目分类列表 -->
+            <div th:replace="cms/echo/common/category::category-fragment(${pageMap})"></div>
+
+            <!-- 广告位 -->
+            <!--<div class="ads">-->
+            <!--    <h3 class="title-sidebar"><i class="layui-icon">&#xe645;</i>广而告之</h3>-->
+            <!--    <div>-->
+
+            <!--    </div>-->
+            <!--</div>-->
+
+            <!-- 博主动态 -->
+            <!--<div class="dynamic">-->
+            <!--    <h3 class="title-sidebar"><i class="layui-icon">&#xe60c;</i>博主动态 ~ </h3>-->
+            <!--    <ul>-->
+            <!--        <li><span class="layui-badge-dot layui-bg-gray"></span>-->
+            <!--            <p>暂无动态<small>2019年08月30日 17:16:15</small></p>-->
+            <!--        </li>-->
+            <!--    </ul>-->
+            <!--</div>-->
+
+            <!-- 标签云 -->
+            <div th:replace="cms/echo/common/tagcloud::tagcloud-fragment(${pageMap})"></div>
+
+            <!-- 友情链接 -->
+            <div th:replace="cms/echo/common/friendlink::friendlink-fragment(${pageMap})"></div>
+
+        </div>
+    </div>
+</div>
+
+<!--页脚-->
+<div th:replace="cms/echo/common/footer::footer-fragment"></div>
+
+
+</body>
+<script>
+    // 分页
+    layui.use('laypage', function () {
+        let laypage = layui.laypage;
+        laypage.render({
+            elem: 'laypage',
+            count: [[${cmsArticlePageResult.total}]],
+            limit: [[${cmsArticlePageResult.pageSize}]],
+            layout: ['count', 'prev', 'page', 'next'],
+            curr: [[${cmsArticlePageResult.pageNum}]],
+            jump: function (obj, first) {
+                if (first) {
+                    return
+                }
+                window.location.href = [[${pathName != null ? pathName : '/page/'}]] + obj.curr + '.html'
+            }
+        })
+    });
+</script>
+</html>

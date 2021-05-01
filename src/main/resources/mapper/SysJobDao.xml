@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.modules.common.dao.SysJobDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.modules.common.entity.SysJob">
+        <!--@Table sys_job-->
+        <result property="jobId" column="job_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
+        <result property="jobSort" column="job_sort" jdbcType="INTEGER"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          job_id, name, enabled, job_sort, create_by, update_by, create_time, update_time
+        from sys_job
+        where job_id = #{jobId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          job_id, name, enabled, job_sort, create_by, update_by, create_time, update_time
+        from sys_job
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        job_id, name, enabled, job_sort, create_by, update_by, create_time, update_time
+        from sys_job
+        <where>
+            <if test="jobId != null">
+                and job_id = #{jobId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="enabled != null">
+                and enabled = #{enabled}
+            </if>
+            <if test="jobSort != null">
+                and job_sort = #{jobSort}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <!--通过userId获取用户岗位集合-联表查询-->
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        select
+            j.job_id, j.name, j.enabled, j.job_sort, j.create_by, j.update_by, j.create_time, j.update_time
+        from sys_users_jobs u,sys_job j
+        where u.job_id = j.job_id
+        and u.user_id = #{userId};
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="jobId" useGeneratedKeys="true">
+        insert into sys_job(name, enabled, job_sort, create_by, update_by, create_time, update_time)
+        values (#{name}, #{enabled}, #{jobSort}, #{createBy}, #{updateBy}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update sys_job
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+            <if test="jobSort != null">
+                job_sort = #{jobSort},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where job_id = #{jobId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from sys_job where job_id = #{jobId}
+    </delete>
+
+</mapper>

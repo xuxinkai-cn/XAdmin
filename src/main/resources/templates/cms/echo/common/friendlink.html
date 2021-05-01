@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="link" th:fragment="friendlink-fragment(pageMap)">
+    <h3 class="title-sidebar"><i class="layui-icon">&#xe64c;</i>友情链接
+        <a style="float: right;color: #666;" href=""></a>
+    </h3>
+    <div>
+        <th:block th:each="item,iterStat : ${pageMap.FriendLink}">
+            <a th:href="${item.friendlinkUrl}" th:title="${item.friendlinkDes}" target="_blank">[[${item.friendlinkName}]]</a>
+        </th:block>
+    </div>
+</div>
+
+</html>

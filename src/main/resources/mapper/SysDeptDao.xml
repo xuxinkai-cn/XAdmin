@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.modules.common.dao.SysDeptDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.modules.common.entity.SysDept">
+        <!--@Table sys_dept-->
+        <result property="deptId" column="dept_id" jdbcType="INTEGER"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+        <result property="subCount" column="sub_count" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="deptSort" column="dept_sort" jdbcType="INTEGER"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          dept_id, pid, sub_count, name, dept_sort, enabled, create_by, update_by, create_time, update_time
+        from sys_dept
+        where dept_id = #{deptId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          dept_id, pid, sub_count, name, dept_sort, enabled, create_by, update_by, create_time, update_time
+        from sys_dept
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        dept_id, pid, sub_count, name, dept_sort, enabled, create_by, update_by, create_time, update_time
+        from sys_dept
+        <where>
+            <if test="deptId != null">
+                and dept_id = #{deptId}
+            </if>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="subCount != null">
+                and sub_count = #{subCount}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="deptSort != null">
+                and dept_sort = #{deptSort}
+            </if>
+            <if test="enabled != null">
+                and enabled = #{enabled}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <!--获取当前传入RoleId的关联部门集合-->
+    <select id="queryByRoleId" resultMap="BaseResultMap">
+        select
+            d.dept_id, d.pid, d.sub_count, d.name, d.dept_sort, d.enabled, d.create_by, d.update_by, d.create_time, d.update_time
+        from sys_roles_depts r,sys_dept d
+        where r.dept_id = d.dept_id
+        and r.role_id = #{roleId};
+    </select>
+
+    <!--通过pid查询下一级部门-->
+    <select id="queryByPid" resultMap="BaseResultMap">
+        select
+            dept_id, pid, sub_count, name, dept_sort, enabled, create_by, update_by, create_time, update_time
+        from sys_dept
+        where pid = #{deptId};
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="deptId" useGeneratedKeys="true">
+        insert into sys_dept(pid, sub_count, name, dept_sort, enabled, create_by, update_by, create_time, update_time)
+        values (#{pid}, #{subCount}, #{name}, #{deptSort}, #{enabled}, #{createBy}, #{updateBy}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update sys_dept
+        <set>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="subCount != null">
+                sub_count = #{subCount},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="deptSort != null">
+                dept_sort = #{deptSort},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where dept_id = #{deptId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from sys_dept where dept_id = #{deptId}
+    </delete>
+
+</mapper>

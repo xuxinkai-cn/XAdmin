@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xuxinkai.cms.dao.CmsCategoryDao">
+
+    <resultMap id="BaseResultMap" type="cn.xuxinkai.cms.entity.CmsCategory">
+        <!--@Table cms_category-->
+        <result property="categoryId" column="category_id" jdbcType="INTEGER"/>
+        <result property="categoryName" column="category_name" jdbcType="VARCHAR"/>
+        <result property="categorySlug" column="category_slug" jdbcType="VARCHAR"/>
+        <result property="categoryDes" column="category_des" jdbcType="VARCHAR"/>
+        <result property="articleNum" column="article_num" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          category_id, category_name, category_slug, category_des, article_num, create_time, update_time, create_by, update_by
+        from cms_category
+        where category_id = #{categoryId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          category_id, category_name, category_slug, category_des, article_num, create_time, update_time, create_by, update_by
+        from cms_category
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          category_id, category_name, category_slug, category_des, article_num, create_time, update_time, create_by, update_by
+        from cms_category
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="categoryName != null and categoryName != ''">
+                and category_name = #{categoryName}
+            </if>
+            <if test="categorySlug != null and categorySlug != ''">
+                and category_slug = #{categorySlug}
+            </if>
+            <if test="categoryDes != null and categoryDes != ''">
+                and category_des = #{categoryDes}
+            </if>
+            <if test="articleNum != null">
+                and article_num = #{articleNum}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+        </where>
+    </select>
+
+    <!--分页查询栏目-->
+    <select id="queryAllByPageUtil" resultMap="BaseResultMap">
+        select
+        category_id, category_name, category_slug, category_des, article_num, create_time, update_time, create_by, update_by
+        from cms_category
+        <if test="field!=null">
+            where
+            <foreach collection="field.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+        <if test="orderByClaus != null">
+            order by ${orderByClaus}
+        </if>
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryTotalByField" resultType="java.lang.Long">
+        select count(*)
+        from cms_category
+        <if test="fieldParams != null ">
+            where
+            <foreach collection="fieldParams.entrySet()" item="item" index="key" separator="and">
+                ${key} = #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--获取栏目列表-->
+    <select id="queryCategoryList" resultMap="BaseResultMap">
+        select category_id, category_name, category_slug, category_des, article_num, create_time, update_time, create_by, update_by
+        from cms_category
+        where article_num > 0
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="categoryId" useGeneratedKeys="true">
+        insert into cms_category(category_name, category_slug, category_des, article_num, create_time, update_time, create_by, update_by)
+        values (#{categoryName}, #{categorySlug}, #{categoryDes}, #{articleNum}, #{createTime}, #{updateTime}, #{createBy}, #{updateBy})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update cms_category
+        <set>
+            <if test="categoryName != null and categoryName != ''">
+                category_name = #{categoryName},
+            </if>
+            <if test="categorySlug != null and categorySlug != ''">
+                category_slug = #{categorySlug},
+            </if>
+            <if test="categoryDes != null and categoryDes != ''">
+                category_des = #{categoryDes},
+            </if>
+            <if test="articleNum != null">
+                article_num = #{articleNum},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+        </set>
+        where category_id = #{categoryId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from cms_category where category_id = #{categoryId}
+    </delete>
+
+</mapper>

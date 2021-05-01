@@ -1,0 +1,448 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>[[${cmsArticle.title}]] - 进击的凯哥 ~ 个人博客</title>
+
+    <!-- 通过自有函数输出HTML头部信息 -->
+    <meta name="description" th:content="${cmsArticle.summary !=null ? cmsArticle.summary : cmsArticle.title}">
+    <meta name="keywords" th:content="${@ThymeleafMethod.tagListToString(cmsArticle.cmsTagList)}">
+    <meta name="template" content="echo">
+
+    <script type="text/javascript">
+        // 评论js
+        (function () {
+            window.EchoComment = {
+                dom: function (id) {
+                    return document.getElementById(id);
+                },
+                create: function (tag, attr) {
+                    var el = document.createElement(tag);
+                    for (var key in attr) {
+                        el.setAttribute(key, attr[key]);
+                    }
+                    return el;
+                },
+                //cid：父级el， coid： 父级的id值
+                reply: function (cid, coid) {
+                    let comment = this.dom(cid), parent = comment.parentNode,
+                            response = this.dom('respond-post-' + [[${cmsArticle.articleId}]]),
+                            input = this.dom('comment-parent'),
+                            form = 'form' === response.tagName ? response : response.getElementsByTagName('form')[0],
+                            textarea = response.getElementsByTagName('textarea')[0];
+                    if (null == input) {
+                        input = this.create('input', {
+                            'type': 'hidden',
+                            'name': 'commentPid',
+                            'id': 'comment-parent'
+                        });
+                        form.appendChild(input);
+                    }
+                    input.setAttribute('value', coid);
+                    if (null == this.dom('comment-form-place-holder')) {
+                        var holder = this.create('div', {
+                            'id': 'comment-form-place-holder'
+                        });
+                        response.parentNode.insertBefore(holder, response);
+                    }
+                    comment.appendChild(response);
+                    this.dom('cancel-comment-reply-link').style.display = '';
+                    if (null != textarea && 'text' === textarea.name) {
+                        textarea.focus();
+                    }
+                    return false;
+                },
+                cancelReply: function () {
+                    var response = this.dom('respond-post-' + [[${cmsArticle.articleId}]]),
+                            holder = this.dom('comment-form-place-holder'), input = this.dom('comment-parent');
+                    if (null != input) {
+                        input.parentNode.removeChild(input);
+                    }
+                    if (null == holder) {
+                        return true;
+                    }
+                    this.dom('cancel-comment-reply-link').style.display = 'none';
+                    holder.parentNode.insertBefore(response, holder);
+                    return false;
+                }
+            };
+        })();
+    </script>
+
+    <link rel="stylesheet" href="/cms/echo/layui/css/layui.css">
+    <link rel="stylesheet" href="/cms/echo/css/style.css">
+    <script src="/cms/echo/layui/layui.js"></script>
+    <script src="/cms/echo/js/main-2.0.js"></script>
+    <style>
+        .header {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10000;
+            width: 100%;
+        }
+
+        .layui-container {
+            margin-top: 70px;
+        }
+
+        .timeline-menu-fixed {
+            top: 70px;
+        }
+
+        .timeline-header h2 {
+            margin-top: -70px;
+            padding-top: 70px;
+        }
+
+        .header {
+            background-color: #000000;
+        }
+
+        .header a {
+            color: #ffffff;
+        }
+
+        .header .layui-nav .layui-nav-item a {
+            color: #ffffff;
+        }
+
+        .header .layui-nav .layui-nav-item .layui-nav-child a {
+            color: #212220;
+        }
+
+        .header .layui-nav .layui-nav-more {
+            border-color: #ffffff transparent transparent;
+        }
+
+        .header .layui-nav .layui-nav-mored {
+            border-color: transparent transparent #ffffff;
+        }
+
+        .footer {
+            background: #000000;
+        }
+
+        .footer span {
+            color: #ffffff;
+        }
+
+        .footer .layui-breadcrumb a {
+            color: #ffffff !important;
+        }
+
+        .footer .layui-breadcrumb span[lay-separator] {
+            color: #ffffff;
+        }
+    </style>
+    <link href="https://cdn.bootcss.com/highlight.js/9.6.0/styles/atelier-lakeside-dark.min.css" rel="stylesheet"/>
+    <script src="//cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlightjs-line-numbers.js/1.1.0/highlightjs-line-numbers.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        hljs.initLineNumbersOnLoad();
+    </script>
+</head>
+<body>
+<!--[if lt IE 8]>
+<div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a
+        href="http://browsehappy.com/">升级你的浏览器</a>.
+</div>
+<![endif]-->
+<!--导航-->
+<div th:replace="cms/echo/common/header::header-fragment"></div>
+
+<div class="layui-container">
+    <div class="layui-row layui-col-space15 main">
+        <!--面包屑-->
+        <div class="map">
+            <span class="layui-breadcrumb">
+                <a href="/">首页</a>
+                <th:block th:if="${cmsArticle.category != null}">
+                    <a th:href="'/category/'+${cmsArticle.category.categorySlug}+'.html'">[[${cmsArticle.category.categoryName}]]</a>
+                </th:block>
+                <a><cite>正文</cite></a>
+            </span>
+        </div>
+
+        <div class="layui-col-md9 layui-col-lg9">
+            <!--文章内容-->
+            <div class="title-article">
+                <h1>[[${cmsArticle.title}]]</h1>
+                <div class="title-msg">
+                    <span><i class="layui-icon">&#xe612;</i> [[${cmsArticle.author.nickName}]]</span>
+                    <span><i class="layui-icon">&#xe60e;</i> [[${#dates.format(cmsArticle.createTime,'yyyy-MM-dd HH:mm:ss')}]] </span>
+                    <span><i class="layui-icon">&#xe62c;</i> [[${cmsArticle.viewNum}]]℃</span>
+                    <span><i class="layui-icon">&#xe63a;</i> [[${cmsArticle.commentNum}]]条</span>
+                </div>
+            </div>
+            <!--正文内容-->
+            <div class="text" itemprop="articleBody" th:utext="${cmsArticle.contentHtml}">
+            </div>
+            <!--标签-->
+            <div class="tags-text">
+                <i class="layui-icon">&#xe66e;</i>标签:
+                <th:block th:if="${#lists.isEmpty(cmsArticle.cmsTagList)}">
+                    none
+                </th:block>
+                <th:block th:unless="${#lists.isEmpty(cmsArticle.cmsTagList)}">
+                    <a th:href="'/tag/'+${item.tagSlug}+'.html'" th:each="item,start : ${cmsArticle.cmsTagList}">[[${item.tagName}]][[${start.last
+                        ? "" : ", "}]]</a>
+                </th:block>
+            </div>
+            <div class="tags-text">
+                <!--版权说明-->
+                <div class="copy-text">
+                    <div>
+                        <p>非特殊说明，本博所有文章均为博主原创。</p>
+                        <p class="hidden-xs">如若转载，请注明出处：<a href="">https://www.xuxinkai.cn/article/[[${cmsArticle.articleId}]].html</a>
+                        </p>
+                    </div>
+                </div>
+                <!--上一篇下一篇-->
+                <div class="page-text">
+                    <div>
+                        <span class="layui-badge layui-bg-gray">上一篇</span>
+                        <a th:if="${beforeArticle != null}" th:href="'/article/'+${beforeArticle.articleId}+'.html'"
+                           th:title="${beforeArticle.title}">[[${beforeArticle.title}]]</a>
+                        <a th:if="${beforeArticle == null}" href="#" title="没有上一篇啦">没有上一篇啦</a>
+                    </div>
+                    <div>
+                        <span class="layui-badge layui-bg-gray">下一篇</span>
+                        <a th:if="${afterArticle != null}" th:href="'/article/'+${afterArticle.articleId}+'.html'"
+                           th:title="${afterArticle.title}">[[${afterArticle.title}]]</a>
+                        <a th:if="${afterArticle == null}" href="#" title="没有下一篇啦">没有下一篇啦</a>
+                    </div>
+                </div>
+                <!--评论内容-->
+                <div class="comment-text layui-form">
+                    <div id="comments">
+                        <!--评论表单-->
+                        <div th:id="'respond-post-'+${cmsArticle.articleId}" class="respond">
+                            <div class="cancel-comment-reply">
+                                <a id="cancel-comment-reply-link" th:href="'#respond-post-'+${cmsArticle.articleId}"
+                                   rel="nofollow" style="display:none"
+                                   onclick="return EchoComment.cancelReply();">取消回复</a>
+                            </div>
+                            <h4 id="response"><i class="layui-icon">&#xe664;</i> 评论啦~</h4>
+                            <br>
+                            <form id="comment-form" role="form">
+                                <input type="hidden" name="articleId" th:value="${cmsArticle.articleId}">
+                                <div class="layui-form-item">
+                                <textarea rows="5" cols="30" name="commentContent" id="commentContent"
+                                          lay-verify="required" placeholder="嘿~ 大神，别默默的看了，快来点评一下吧"
+                                          class="layui-textarea" value=""></textarea>
+                                </div>
+                                <div class="layui-form-item layui-row layui-col-space5">
+                                    <div class="layui-col-md4">
+                                        <input type="text" name="nickname" id="nickname" lay-verify="required"
+                                               class="layui-input" placeholder="* 怎么称呼" value="">
+                                    </div>
+                                    <div class="layui-col-md4">
+                                        <input type="email" name="email" id="email" lay-verify="required|email"
+                                               class="layui-input" placeholder="* 邮箱(放心~会保密~.~)" value="">
+                                    </div>
+                                    <div class="layui-col-md4">
+                                        <input type="url" name="url" id="url" lay-verify="v_url" class="layui-input"
+                                               placeholder="http://您的主页" value="">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="comment">提交评论
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <th:block th:if="${cmsArticle.commentNum > 0}">
+                            <br>
+                            <h3>已有 [[${cmsArticle.commentNum}]] 条评论</h3>
+                            <br>
+                        </th:block>
+
+                        <!--评论列表-->
+                        <div class="pinglun">
+                            <ol class="comment-list" id="comment-box"></ol>
+                        </div>
+                        <!--评论分页-->
+                        <!--<div class="page-navigator">-->
+                        <!--    <div class="layui-laypage layui-laypage-molv">-->
+                        <!--        <a href="comment-page-12.html#comments" class="current">1</a>-->
+                        <!--        <a href="comment-page-22.html#comments">2</a>-->
+                        <!--        <a href="comment-page-22.html#comments" class="next">»</a>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar layui-col-md3 layui-col-lg3">
+            <!--<div class="component layui-hide-xs">-->
+            <!--    <form class="layui-form" id="search" method="post" action="https://www.echo.so/" role="search">-->
+            <!--        <div class="layui-inline input">-->
+            <!--            <input type="text" id="s" name="s" class="layui-input" required="" lay-verify="required"-->
+            <!--                   placeholder="输入关键字搜索">-->
+            <!--        </div>-->
+            <!--        <div class="layui-inline">-->
+            <!--            <button class="layui-btn layui-btn-sm layui-btn-primary"><i class="layui-icon">&#xe615;</i>-->
+            <!--            </button>-->
+            <!--        </div>-->
+            <!--    </form>-->
+            <!--</div>-->
+
+            <!-- 栏目分类列表 -->
+            <div th:replace="cms/echo/common/category::category-fragment(${pageMap})"></div>
+
+            <!--广告位-->
+            <!--<div class="ads">-->
+            <!--    <h3 class="title-sidebar"><i class="layui-icon">&#xe645;</i>广而告之</h3>-->
+            <!--    <div>-->
+
+            <!--    </div>-->
+            <!--</div>-->
+
+            <!-- 博主动态 -->
+            <!--<div class="dynamic">-->
+            <!--    <h3 class="title-sidebar"><i class="layui-icon">&#xe60c;</i>博主动态 ~ </h3>-->
+            <!--    <ul>-->
+            <!--        <li><span class="layui-badge-dot layui-bg-gray"></span>-->
+            <!--            <p>暂无动态<small>2019年08月30日 17:16:15</small></p>-->
+            <!--        </li>-->
+            <!--    </ul>-->
+            <!--</div>-->
+
+            <!-- 标签云 -->
+            <div th:replace="cms/echo/common/tagcloud::tagcloud-fragment(${pageMap})"></div>
+
+            <!-- 友情链接 -->
+            <div th:replace="cms/echo/common/friendlink::friendlink-fragment(${pageMap})"></div>
+        </div>
+    </div>
+    <!--用作评论头像生成-->
+    <canvas id='canvas' style='display:none'></canvas>
+    <script>
+        layui.use(['layer'], function () {
+            var layer = layui.layer, $ = layui.$;
+            // 加载并渲染评论列表
+            $.ajax({
+                url: '/api/v1/comment/getComment?articleId=[[${cmsArticle.articleId}]]',
+                method: 'get',
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.code === 0) {
+                        let loop = (o) => {
+                            return o.map((e, index) => {
+                                let commentClass = '';
+                                let commentAt = '';
+                                if (e.commentPid === 0) {
+                                    if (index % 2 === 0) {
+                                        commentClass = 'comment-body comment-parent comment-odd';
+                                    } else {
+                                        commentClass = 'comment-body comment-parent comment-event';
+                                    }
+                                } else {
+                                    commentClass = 'comment-body comment-child comment-level-odd comment-odd comment-by-author';
+                                    commentAt = `<a href="#comment-${e.commentPid}">@${e.pnickname}</a>`
+                                }
+                                if (e.commentChildren) {
+                                    return `<li id="li-comment-${e.commentId}" class="${commentClass}">
+                                        <div id="comment-${e.commentId}" class="pl-dan comment-txt-box">
+                                            <div class="t-p comment-author">
+                                                <img class="avatar"
+                                                     src=""
+                                                     alt="${e.nickname}" width="40" height="40"></div>
+                                            <div class="t-u comment-author">
+                                                <strong>
+                                                    <a href="javascript:;" rel="external nofollow">${e.nickname}</a> <span
+                                                        class="layui-badge"></span>
+                                                </strong>
+                                                <div><b>${commentAt}</b></div>
+                                                <div class="t-s"><p>
+                                                    <p>${e.commentContent}</p></div>
+                                                <span class="t-btn"><a href="${e.articleId}+'.html#respond-post-'+${e.articleId}"
+                                                                       rel="nofollow"
+                                                                       onclick="return EchoComment.reply('comment-${e.commentId}', ${e.commentId});">回复</a> <span
+                                                        class="t-g">${e.createTime}</span></span>
+                                            </div><!-- 单条评论者信息及内容 -->
+                                    </div>
+                                    <div class="pl-list comment-children">
+                                    <ol class="comment-list">
+                                            ${loop(e.commentChildren).join(" ")}
+                                    </ol>
+                                    </div>
+                                    </li>`;
+                                    } else {
+                                    return `<li id="li-comment-${e.commentId}" class="${commentClass}">
+                                        <div id="comment-${e.commentId}" class="pl-dan comment-txt-box">
+                                            <div class="t-p comment-author">
+                                                <img class="avatar"
+                                                     src=""
+                                                     alt="${e.nickname}" width="40" height="40"></div>
+                                            <div class="t-u comment-author">
+                                                <strong>
+                                                    <a href="javascript:;" rel="external nofollow">${e.nickname}</a> <span
+                                                        class="layui-badge"></span>
+                                                </strong>
+                                                <div><b>${commentAt}</b></div>
+                                                <div class="t-s"><p>
+                                                    <p>${e.commentContent}</p></div>
+                                                <span class="t-btn"><a href="${e.articleId}+'.html#respond-post-'+${e.articleId}"
+                                                                       rel="nofollow"
+                                                                       onclick="return EchoComment.reply('comment-${e.commentId}', ${e.commentId});">回复</a> <span
+                                                        class="t-g">${e.createTime}</span></span>
+                                            </div><!-- 单条评论者信息及内容 -->
+                                    </div>
+                                    </li>`;
+                                    }
+                            })
+                        }
+                        $("#comment-box").html(loop(res.data).join(" "));
+
+                        // 处理评论人头像
+                        $(".avatar").each(
+                                function () {
+                                    $(this).attr("src", textToImage($(this).attr("alt")))
+                                }
+                        )
+                        return;
+                    }
+                    layer.msg("评论加载失败~");
+                },
+                error: function () {
+                    layer.msg("评论加载失败~");
+                }
+            })
+
+            // 根据用户昵称生产用户默认头像
+            function textToImage(name) {
+                let nick = "暂无";
+                if (name) {
+                    nick = name.charAt(0);
+                }
+                const fontSize = 14;
+                const fontWeight = 'normal';
+                let canvas = document.getElementById("canvas");
+                canvas.width = 28;
+                canvas.height = 28;
+                let context = canvas.getContext('2d');
+                context.fillStyle = "#2D89EF";
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.fillStyle = "#FFFFFF";
+                context.font = fontWeight + ' ' + fontSize + 'px sans-serif';
+                context.textAlign = "center";
+                context.textBaseline = "middle";
+                context.fillText(nick, fontSize, fontSize);
+                return canvas.toDataURL("image/png");
+            }
+        })
+    </script>
+</div>
+<!--页脚-->
+<div th:replace="cms/echo/common/footer::footer-fragment">
+</div>
+</body>
+</html>
